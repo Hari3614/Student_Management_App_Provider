@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_management_provider/core/constants.dart';
 import 'package:student_management_provider/model/student_model.dart';
+import 'package:student_management_provider/presentation/student_list_screen/student_list.dart';
 import 'package:student_management_provider/presentation/widgets/text_button.dart';
 import 'package:student_management_provider/student_model/student_controller.dart';
 
@@ -39,10 +40,14 @@ void showDialogueforDelete(BuildContext context, StudentModel student) {
                   children: [
                     TextButtonWidgets(
                       onPressed: () async {
-                        await Provider.of<StudentProvider>(context,
+                        await Provider.of<DeleteStudentProvider>(context,
                                 listen: false)
                             .deleteStudent(student.id!);
                         Navigator.of(context).pop();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => StudentListScreen()));
                       },
                       buttontext: 'OK',
                     ),

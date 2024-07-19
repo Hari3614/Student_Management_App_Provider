@@ -77,7 +77,12 @@ void showsDialogBoxs({
                         icon: const Icon(Icons.delete, color: appBarClrBlk),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                UpdateStudentsScreen(studentModel: student),
+                          ));
+                        },
                         icon: const Icon(Icons.edit, color: appBarClrBlk),
                       ),
                     ],

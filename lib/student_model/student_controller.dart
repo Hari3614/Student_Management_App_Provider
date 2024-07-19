@@ -17,15 +17,17 @@ class StudentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future pickImage(ImageSource source) async {
+  Future<String?> pickImage(ImageSource source) async {
     try {
       final pickedFile = await ImagePicker().pickImage(source: source);
       if (pickedFile == null) {
-        return;
+        return null;
       }
+      pickedImage = pickedFile.path;
       return pickedFile.path;
     } catch (e) {
-      print('error fetching error');
+      print('error fetching image: $e');
+      return null;
     }
   }
 
@@ -63,9 +65,11 @@ class StudentProvider extends ChangeNotifier {
   Future<void> setInitialImage(String imageUrl) async {
     pickedImage = imageUrl;
   }
+}
 
+class DeleteStudentProvider extends ChangeNotifier {
   Future<void> deleteStudent(int id) async {
     await DbHelper().deleteStudent(id);
-    loadStudents();
+    notifyListeners();
   }
 }

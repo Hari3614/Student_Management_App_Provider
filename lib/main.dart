@@ -16,6 +16,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => StudentProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DeleteStudentProvider(),
         )
       ],
       child: const MaterialApp(

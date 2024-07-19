@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:student_management_provider/core/constants.dart';
@@ -18,7 +17,7 @@ class UpdateStudentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final studentProviderController = context.read<StudentProvider>();
+    final studentProvider = context.read<StudentProvider>();
     TextEditingController nameController =
         TextEditingController(text: studentModel.name);
     TextEditingController ageController =
@@ -32,7 +31,6 @@ class UpdateStudentsScreen extends StatelessWidget {
     TextEditingController guardianNameController =
         TextEditingController(text: studentModel.guardianName);
     final formKey = GlobalKey<FormState>();
-    String pickedimage = studentModel.imageUrl;
 
     return Scaffold(
       appBar: PreferredSize(
@@ -47,55 +45,54 @@ class UpdateStudentsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 120, top: 25),
-              child: Consumer<StudentProvider>(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 120, top: 25),
+                child: Consumer<StudentProvider>(
                   builder: (context, studentProvider, _) {
-                if (studentProviderController.pickedImage.isEmpty) {
-                  studentProviderController
-                      .setInitialImage(studentModel.imageUrl);
-                }
-                return InkWell(
-                  onTap: () async {
-                    final imagepath =
+                    if (studentProvider.pickedImage.isEmpty) {
+                      studentProvider.setInitialImage(studentModel.imageUrl);
+                    }
+                    return InkWell(
+                      onTap: () async {
                         await studentProvider.pickImage(ImageSource.gallery);
-                    studentProviderController.pickedImage = imagepath ?? '';
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 189, 186, 186),
-                          borderRadius: boxborderRadius,
-                          image: pickedimage.isNotEmpty
-                              ? DecorationImage(
-                                  image: FileImage(File(pickedimage)),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        width: 150,
-                        height: 170,
-                        child: pickedimage.isEmpty
-                            ? const Center(
-                                child: Icon(
-                                  Icons.add_a_photo,
-                                  size: 30,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : null,
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 189, 186, 186),
+                              borderRadius: boxborderRadius,
+                              image: studentProvider.pickedImage.isNotEmpty
+                                  ? DecorationImage(
+                                      image: FileImage(
+                                          File(studentProvider.pickedImage)),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                            ),
+                            width: 150,
+                            height: 170,
+                            child: studentProvider.pickedImage.isEmpty
+                                ? const Center(
+                                    child: Icon(
+                                      Icons.add_a_photo,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }),
-            ),
-            Constants().kheight20,
-            Form(
+                    );
+                  },
+                ),
+              ),
+              Constants().kheight20,
+              Form(
                 key: formKey,
                 child: Column(
                   children: [
@@ -196,47 +193,53 @@ class UpdateStudentsScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: appBarClrBlk, borderRadius: boxborderRadius),
                       child: TextButton(
-                          onPressed: () {
-                            if (formKey.currentState!.validate() &&
-                                pickedimage.isNotEmpty) {
-                              studentProviderController.updateStudent(
-                                  StudentModel(
-                                      id: studentModel.id,
-                                      name: nameController.text,
-                                      age: int.parse(ageController.text),
-                                      department: departmentController.text,
-                                      place: placeController.text,
-                                      phoneNumber:
-                                          int.parse(phoneNoController.text),
-                                      guardianName: guardianNameController.text,
-                                      imageUrl: pickedimage));
-                              Navigator.of(context).push(MaterialPageRoute(
+                        onPressed: () {
+                          if (formKey.currentState!.validate() &&
+                              studentProvider.pickedImage.isNotEmpty) {
+                            studentProvider.updateStudent(
+                              StudentModel(
+                                id: studentModel.id,
+                                name: nameController.text,
+                                age: int.parse(ageController.text),
+                                department: departmentController.text,
+                                place: placeController.text,
+                                phoneNumber: int.parse(phoneNoController.text),
+                                guardianName: guardianNameController.text,
+                                imageUrl: studentProvider.pickedImage,
+                              ),
+                            );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
                                 builder: (context) => const StudentListScreen(),
-                              ));
-                            } else if (pickedimage.isEmpty) {
-                              snackBarFunction(
-                                context: context,
-                                title: 'Error',
-                                subtitle: 'Please select an image',
-                                backgroundColor: Colors.red,
-                                dismissDirection: DismissDirection.horizontal,
-                                borderRadius: 10,
-                                animationDuration: const Duration(seconds: 2),
-                                reverseAnimationCurve: Curves.bounceOut,
-                                duration: const Duration(seconds: 2),
-                              );
-                            } else {}
-                          },
-                          child: Text(
-                            'Upload Details',
-                            style: buttonTxt,
-                          )),
+                              ),
+                            );
+                          } else if (studentProvider.pickedImage.isEmpty) {
+                            snackBarFunction(
+                              context: context,
+                              title: 'Error',
+                              subtitle: 'Please select an image',
+                              backgroundColor: Colors.red,
+                              dismissDirection: DismissDirection.horizontal,
+                              borderRadius: 10,
+                              animationDuration: const Duration(seconds: 2),
+                              reverseAnimationCurve: Curves.bounceOut,
+                              duration: const Duration(seconds: 2),
+                            );
+                          } else {}
+                        },
+                        child: Text(
+                          'Upload Details',
+                          style: buttonTxt,
+                        ),
+                      ),
                     ),
                     setHeight
                   ],
-                ))
-          ],
-        )),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
